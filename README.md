@@ -83,6 +83,59 @@ The Swagger UI provides interactive documentation where you can:
 ## Testing the API
 
 1. Get a JWT token from your AuthAction tenant
+
+There are two ways to obtain an access token:
+
+### A. Client Credentials Flow (M2M)
+
+For machine-to-machine communication, use the following curl command:
+
+```bash
+curl --request POST \
+--url https://your-authaction-tenant-domain/oauth2/m2m/token \
+--header 'content-type: application/json' \
+--data '{"client_id":"your-authaction-m2m-app-clientid","client_secret":"your-authaction-m2m-app-client-secret","audience":"your-authaction-api-identifier","grant_type":"client_credentials"}'
+```
+
+Replace:
+
+- `your-authaction-tenant-domain` with your AuthAction tenant domain
+- `your-authaction-m2m-app-clientid` with your M2M application client ID
+- `your-authaction-m2m-app-client-secret` with your M2M application client secret
+- `your-authaction-api-identifier` with your API identifier
+
+### B. Authorization Code Flow (Frontend)
+
+For frontend applications, you can use the authorization code flow:
+
+1. Configure your frontend application in AuthAction Dashboard with:
+
+   - Allowed Callback URLs
+   - Allowed Logout URLs
+   - Allowed Web Origins
+
+2. Implement the OAuth2 authorization code flow in your frontend application:
+   - Redirect users to AuthAction's authorization endpoint
+   - Handle the authorization code callback
+   - Exchange the code for an access token
+   - Use the access token to call this API
+
+Example frontend configuration:
+
+```javascript
+// AuthAction configuration
+const authConfig = {
+  domain: "your-authaction-tenant-domain",
+  clientId: "your-frontend-app-clientid",
+  audience: "your-authaction-api-identifier",
+  redirectUri: "http://localhost:3000/callback",
+};
+```
+
+The access token obtained from either flow can be used to call the API endpoints.
+
+Note: Make sure your M2M application or Frontend application has been authorized to access the API in the AuthAction Dashboard.
+
 2. Use the token in your requests:
 
 ```http
@@ -120,3 +173,23 @@ The project uses the following key packages:
 - `Microsoft.AspNetCore.Authentication.JwtBearer`: For JWT authentication
 - `Microsoft.IdentityModel.Protocols.OpenIdConnect`: For OpenID Connect support
 - `Swashbuckle.AspNetCore`: For API documentation
+
+## Common Issues
+
+#### **Invalid Token Errors**:
+
+- Ensure that the token being used is signed by AuthAction using the `RS256` algorithm and contains the correct issuer and audience claims.
+- Verify that the `Authority` and `Audience` properties are correctly set in `appsettings.Development.json`.
+
+#### **Public Key Fetching Errors**:
+
+- If there are issues retrieving the public keys from AuthAction, check the JWKS URI and ensure your application can reach the AuthAction servers.
+- The JWKS URI should be: `https://your-authaction-tenant-domain/.well-known/jwks.json`
+
+#### **Unauthorized Access**:
+
+- If requests to the protected route (`/weatherforecast`) are failing, ensure that:
+  - The JWT token is being correctly included in the `Authorization` header
+  - The token is valid and not expired
+  - The token's audience matches your API identifier
+  - The token's issuer matches your AuthAction domain
