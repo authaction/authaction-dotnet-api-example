@@ -1,0 +1,8 @@
+@authaction_dotnet_api_example_HostAddress = http://localhost:5287
+@access_token = your_jwt_token_here
+
+GET {{authaction_dotnet_api_example_HostAddress}}/weatherforecast
+Accept: application/json
+Authorization: Bearer {{access_token}}
+
+###
