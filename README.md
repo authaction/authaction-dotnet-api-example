@@ -21,7 +21,7 @@ This is a sample ASP.NET Core Web API project that demonstrates how to implement
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
+git clone git@github.com:authaction/authaction-dotnet-api-example.git
 cd authaction-dotnet-api-example
 ```
 
@@ -58,14 +58,12 @@ dotnet run
 The API will be available at:
 
 - HTTP: http://localhost:5287
-- HTTPS: https://localhost:7208
 
 ### Swagger UI
 
 You can access the Swagger UI documentation at:
 
 - http://localhost:5287/swagger
-- https://localhost:7208/swagger
 
 The Swagger UI provides interactive documentation where you can:
 
