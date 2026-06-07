@@ -1,11 +1,11 @@
 # AuthAction .NET API Example
 
-This is a sample ASP.NET Core Web API project that demonstrates how to implement JWT authentication using AuthAction's JWKS (JSON Web Key Set) endpoint. The project shows how to secure API endpoints using JWT tokens issued by AuthAction.
+This is a sample ASP.NET Core Web API project that demonstrates how to implement JWT authentication using the `AuthAction.AspNetCore` package. The project shows how to secure API endpoints using JWT tokens issued by AuthAction.
 
 ## Features
 
 - ASP.NET Core 8.0 Web API
-- JWT Authentication with JWKS validation
+- JWT Authentication via `AuthAction.AspNetCore`
 - Swagger/OpenAPI documentation
 - Development and Production environment configurations
 - HTTPS support
@@ -29,8 +29,8 @@ cd authaction-dotnet-api-example
 
 ```json
 {
-  "Auth": {
-    "Authority": "https://your-authaction-tenant-domain/",
+  "AuthAction": {
+    "Domain": "your-authaction-tenant-domain",
     "Audience": "your-authaction-api-identifier"
   }
 }
@@ -120,18 +120,6 @@ For frontend applications, you can use the authorization code flow:
    - Exchange the code for an access token
    - Use the access token to call this API
 
-Example frontend configuration:
-
-```javascript
-// AuthAction configuration
-const authConfig = {
-  domain: "your-authaction-tenant-domain",
-  clientId: "your-frontend-app-clientid",
-  audience: "your-authaction-api-identifier",
-  redirectUri: "http://localhost:3000/callback",
-};
-```
-
 The access token obtained from either flow can be used to call the API endpoints.
 
 Note: Make sure your M2M application or Frontend application has been authorized to access the API in the AuthAction Dashboard.
@@ -156,30 +144,21 @@ You can also use the included `authaction-dotnet-api-example.http` file to test 
 
 1. Client obtains a JWT token from AuthAction
 2. Client includes the token in the Authorization header
-3. API validates the token using AuthAction's JWKS endpoint
+3. `AddAuthAction()` registers JWT Bearer authentication — ASP.NET Core automatically fetches and caches the JWKS from `https://<domain>/.well-known/jwks.json` via OIDC discovery
 4. If valid, the request is processed; if not, returns 401 Unauthorized
-
-## Security Features
-
-- JWT token validation
-- HTTPS redirection in production
-- Secure configuration management
-- Development/Production environment separation
 
 ## Development
 
-The project uses the following key packages:
+The project uses the following key package:
 
-- `Microsoft.AspNetCore.Authentication.JwtBearer`: For JWT authentication
-- `Microsoft.IdentityModel.Protocols.OpenIdConnect`: For OpenID Connect support
-- `Swashbuckle.AspNetCore`: For API documentation
+- `AuthAction.AspNetCore`: JWT Bearer authentication backed by AuthAction
 
 ## Common Issues
 
 #### **Invalid Token Errors**:
 
 - Ensure that the token being used is signed by AuthAction using the `RS256` algorithm and contains the correct issuer and audience claims.
-- Verify that the `Authority` and `Audience` properties are correctly set in `appsettings.Development.json`.
+- Verify that `AuthAction:Domain` and `AuthAction:Audience` are correctly set in `appsettings.Development.json`.
 
 #### **Public Key Fetching Errors**:
 
